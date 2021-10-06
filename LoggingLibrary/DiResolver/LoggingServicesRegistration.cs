@@ -8,7 +8,7 @@ using Serilog.Extensions.Autofac.DependencyInjection;
 
 namespace LoggingLibrary.DiResolver
 {
-  public static class ServiceCollectionExtension
+  public static class LoggingServicesRegistration
   {
     public static ContainerBuilder AddLoggingServices(this ContainerBuilder builder)
     {
