@@ -16,6 +16,8 @@ namespace DataServiceProvider.Core.DtoAbstraction
   public interface IdAbstraction<T> : IdAbstraction
   {
     T Value { get; }
+
+    string ValueAsString { get; }
   }
 
   /// <summary>

@@ -3,7 +3,9 @@ using DataServiceProvider.UnitOfWork;
 using LoggingLibrary;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataServiceProvider.Core.UnitOfWork
@@ -11,68 +13,104 @@ namespace DataServiceProvider.Core.UnitOfWork
   public abstract class UnitOfWorkBase<T, TId> : IUnitOfWork<T, TId> where T : IDto<TId>
   {
     private IList<T> _dirtyList = new List<T>();
+    private List<T> _insertList = new List<T>();
+    private ConcurrentDictionary<IdAbstraction<TId>, bool> _deleteList = new ConcurrentDictionary<IdAbstraction<TId>, bool>();
+
     private readonly IBasicLogger<UnitOfWorkBase<T, TId>> _logger;
 
-    public UnitOfWorkBase (IBasicLogger<UnitOfWorkBase<T, TId>> logger)
+    public UnitOfWorkBase(IBasicLogger<UnitOfWorkBase<T, TId>> logger)
     {
       _logger = logger;
     }
 
-    public bool RegisterClean(T item)
+    private bool RegisterAndLog(Func<bool> toDo, string logAction, string logItem)
     {
-      return RegisterAndLog(item, _dirtyList, "Uow element cleaning");
-    }
-
-    private bool RegisterAndLog(T item, IList<T> list, string logMessage)
-    {
-      bool result = true;
-
-      if (list.Contains(item))
-      {
-        result = list.Remove(item);
-      }
-
-      LogSuccess(result, "UoW element cleaning");
+      bool result = toDo.Invoke();
+      LogSuccess(result, logAction, logItem);
       return result;
     }
 
 
-    private void LogSuccess(bool successfull, string description)
+    private void LogSuccess(bool successfull, string descriptionAction, string desctriptionItem)
     {
       if (successfull)
       {
-        _logger.LogDebug("Successfully done {0}", description);
+        _logger.LogDebug("Successfully {0}, item - {1}", descriptionAction, desctriptionItem);
       }
-      else 
+      else
       {
-        _logger.LogDebug("Failed to do {0}", description);
+        _logger.LogDebug("Failed {0}, item - {1}", descriptionAction, desctriptionItem);
       }
+    }
+
+    public bool RegisterClean(T item)
+    {
+      return RegisterAndLog(
+        () =>
+        {
+          if (_dirtyList.Contains(item))
+          {
+            return _dirtyList.Remove(item);
+          }
+
+          return true;
+        }, "Uow element cleaning", item.Id.ValueAsString);
     }
 
     public bool RegisterDirty(T item, IdAbstraction<TId> id)
     {
-      if (!_dirtyList.Contains(item))
-      {
-        _dirtyList.Add(item);
-        return true;
-      }
+      return RegisterAndLog(
+       () =>
+       {
+         if (!_dirtyList.Contains(item))
+         {
+           _dirtyList.Add(item);
+         }
 
-      return false;
+         return true;
+       }, "Uow element clean", item.Id.ValueAsString);     
     }
 
     public bool RegisterInsert(IEnumerable<T> records)
     {
-      throw new NotImplementedException();
+      return RegisterAndLog(
+      () =>
+      {
+        foreach (var x in records)
+        {
+          bool res = false;
+          _deleteList.TryRemove(x.Id, out res);
+          _dirtyList.Remove(x);
+          _insertList.Remove(x);
+        }
+
+        _insertList.AddRange(records);
+
+        return true;
+      }, "Inserting elements into UoW cache", records.Count().ToString());
     }
 
     public bool RegisterRemove(IdAbstraction<TId> id, bool softRemove)
     {
-      throw new NotImplementedException();
+      return RegisterAndLog(
+     () =>
+     {
+       if (!_deleteList.Keys.Contains(id))
+       {
+         _deleteList[id] = softRemove;
+       }
+
+       return true;
+     }, "Registering remove from UoW", id.ValueAsString);
     }
 
     public Task<UoWRegisterResult> CleanChanges()
     {
-      throw new NotImplementedException();
+      _dirtyList.Clear();
+      _deleteList.Clear();
+      _insertList.Clear();
+
+      return Task.FromResult(UoWRegisterResult.Successfull);
     }
 
     public Task<IEnumerable<T>> GetAll(bool? isActive = true)
@@ -105,7 +143,7 @@ namespace DataServiceProvider.Core.UnitOfWork
       throw new NotImplementedException();
     }
 
-   
+
 
     public Task<UoWAggregatedResult> RevertAll()
     {

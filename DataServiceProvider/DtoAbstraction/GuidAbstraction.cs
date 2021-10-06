@@ -9,6 +9,8 @@ namespace DataServiceProvider.Core.DtoAbstraction
     private Guid _id;
     public Guid Value => _id;
 
+    public string ValueAsString => _id.ToString();
+
     public GuidAbstraction(Guid id)
     {
       _id = id;
