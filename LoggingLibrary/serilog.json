@@ -1,0 +1,43 @@
+{
+  "Serilog": {
+    "Using": [],
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Information",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "outputTemplate": "{Timestamp} {Message}{NewLine:1}{Exception:1}",
+          "path": "..\\Logs\\Log.txt",
+          "restrictedToMinimumLevel": "Information"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "formatter": "Serilog.Formatting.Json.JsonFormatter, Serilog",
+          "path": "..\\Logs\\StructuredLog.json",
+          "restrictedToMinimumLevel": "Information"
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithProcessId",
+      "WithThreadId"
+    ],
+    "Properties": {
+      "ApplicationName": "CWTestingBench"
+    }
+  }
+}

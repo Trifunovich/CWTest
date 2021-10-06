@@ -1,9 +1,9 @@
-﻿namespace CWTest.Ui.WPF.DependencyInjection
+﻿namespace CWTest.Core.DependencyInjection
 {
   /// <summary>
   /// Marks the class for registering as singleton in DI container
   /// </summary>
-  interface IRegisterSingleton
+  public interface IRegisterSingleton
   {
 
   }

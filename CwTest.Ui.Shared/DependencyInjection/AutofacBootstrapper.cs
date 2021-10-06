@@ -1,15 +1,13 @@
 ﻿using Autofac;
+using CWTest.Core.DependencyInjection;
 using Stylet;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CWTest.Ui.WPF.DependencyInjection
 {
-  internal class AutofacBootstrapper<TRootViewModel> : BootstrapperBase where TRootViewModel : class
+  public class AutofacBootstrapper<TRootViewModel> : BootstrapperBase where TRootViewModel : class
   {
     private IContainer container;
 
@@ -49,7 +47,10 @@ namespace CWTest.Ui.WPF.DependencyInjection
     /// <summary>
     /// Override to add your own types to the IoC container.
     /// </summary>
-    protected virtual void ConfigureIoC(ContainerBuilder builder) { }
+    protected virtual void ConfigureIoC(ContainerBuilder builder) 
+    {
+      DiRoslerHelper.RegisterDependenciesAutomaticallyByMarker(builder);
+    }
 
     public override object GetInstance(Type type)
     {

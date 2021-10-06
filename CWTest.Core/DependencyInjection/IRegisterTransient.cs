@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CWTest.Ui.WPF.DependencyInjection
+namespace CWTest.Core.DependencyInjection
 {
   /// <summary>
   /// Marks the class for registering as transient in DI container
   /// </summary>
-  interface IRegisterTransient
+  public interface IRegisterTransient
   {
   }
 }

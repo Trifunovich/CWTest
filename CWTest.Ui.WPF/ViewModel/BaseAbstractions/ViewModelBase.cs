@@ -1,4 +1,5 @@
-﻿using Stylet;
+﻿using Microsoft.Extensions.Logging;
+using Stylet;
 using System;
 
 namespace CWTest.Ui.WPF.ViewModel.BaseAbstractions
@@ -13,6 +14,11 @@ namespace CWTest.Ui.WPF.ViewModel.BaseAbstractions
     public new virtual string DisplayName
     {
       get => _displayName ?? GetType().Name;    
+    }
+
+    public ViewModelBase()
+    {
+    
     }
 
     protected virtual void Dispose(bool disposing)

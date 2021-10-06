@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWTest.Core", "CWTest.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CwTest.Ui.Shared", "CwTest.Ui.Shared\CwTest.Ui.Shared.csproj", "{9D0B8972-C24B-449D-A3EF-5831A94C2A9C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelperLibraries", "HelperLibraries", "{72D6401D-EB14-443F-8283-0F6A9C0B495A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingLibrary", "LoggingLibrary\LoggingLibrary.csproj", "{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +31,16 @@ Global
 		{9D0B8972-C24B-449D-A3EF-5831A94C2A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D0B8972-C24B-449D-A3EF-5831A94C2A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D0B8972-C24B-449D-A3EF-5831A94C2A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F} = {72D6401D-EB14-443F-8283-0F6A9C0B495A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40B7532D-0446-49FE-AFA2-FF88D026E3FC}

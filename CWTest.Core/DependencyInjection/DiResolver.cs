@@ -1,14 +1,19 @@
 ﻿using Autofac;
-using CWTest.Ui.WPF.ViewModel.Controls;
+using LoggingLibrary.DiResolver;
 using System.Reflection;
 
-namespace CWTest.Ui.WPF.DependencyInjection
+namespace CWTest.Core.DependencyInjection
 {
-  public static class ServiceCollectionExtension
+  public static class DiRoslerHelper
   {
-    public static ContainerBuilder AddWpfAutofacServices(this ContainerBuilder builder, string fileName)
+    /// <summary>
+    /// Registers all the dependencies in the assembly marked with appropriate interfaces
+    /// </summary>
+    /// <param name="builder">Container builder from Autofac</param>
+    /// <returns>Updated container builder</returns>
+    public static ContainerBuilder RegisterDependenciesAutomaticallyByMarker(this ContainerBuilder builder)
     {
-      var assembly = typeof(ServiceCollectionExtension)
+      var assembly = typeof(DiRoslerHelper)
           .GetTypeInfo()
           .Assembly;
 
@@ -19,6 +24,8 @@ namespace CWTest.Ui.WPF.DependencyInjection
       builder.RegisterAssemblyTypes(assembly)
            .Where(x => x.IsAssignableTo<IRegisterTransient>())
            .AsImplementedInterfaces().InstancePerLifetimeScope();
+
+      builder.AddLoggingServices();
 
       return builder;
     }

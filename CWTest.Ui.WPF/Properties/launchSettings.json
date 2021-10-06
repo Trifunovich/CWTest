@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "CWTest.Ui.WPF": {
+      "commandName": "Executable",
+      "executablePath": "dotnet.exe",
+      "commandLineArgs": "CWTest.Ui.WPF.dll"
+    }
+  }
+}
