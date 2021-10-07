@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataAccess.Sql\DataAccess.Sql.csproj" />
     <ProjectReference Include="..\DataServiceProvider\DataServiceProvider.Core.csproj" />
   </ItemGroup>
 

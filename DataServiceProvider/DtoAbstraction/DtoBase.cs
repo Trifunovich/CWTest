@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CWTest.Core.DataManipulation;
+using System;
 
 namespace DataServiceProvider.Core.DtoAbstraction
 {
-  public abstract class DtoBase<TIdAbs> : IDto<TIdAbs>
+  public abstract class DtoBase : IDto
   {
-    public abstract IdAbstraction<TIdAbs> Id { get;}
+    public abstract IDAbstraction Id { get;}
 
     public virtual string Label { get; set; }
 

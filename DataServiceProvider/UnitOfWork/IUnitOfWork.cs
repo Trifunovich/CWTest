@@ -1,20 +1,21 @@
-﻿using DataServiceProvider.Core.DtoAbstraction;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CWTest.Core.DataManipulation;
+using DataServiceProvider.Core.DtoAbstraction;
 
-namespace DataServiceProvider.UnitOfWork
+namespace DataServiceProvider.Core.UnitOfWork
 {
   /// <summary>
   /// Classic unit of work pattern, it takes a repo and aggregates the changes, waiting for the commit
   /// </summary>
-  public interface IUnitOfWork<T, TId> where T : IDto<TId>
+  public interface IUnitOfWork<T> where T : IDto
   {
     /// <summary>
     /// The item needs to be updated inside of the database
     /// </summary>
     /// <param name="item">Database entity</param>
-    bool RegisterDirty(T item, IdAbstraction<TId> id);
+    bool RegisterDirty(T item);
 
     /// <summary>
     /// The item doesn't need updating, removing it from clean registry
@@ -27,7 +28,7 @@ namespace DataServiceProvider.UnitOfWork
     /// </summary>
     /// <param name="id">Item id - GUID</param>
     /// <param name="softRemove">Should it be marked as inactive or deleted totally</param>
-    bool RegisterRemove(IdAbstraction<TId> id, bool softRemove);
+    bool RegisterRemove(IDAbstraction id, bool softRemove);
 
     /// <summary>
     /// Inserts the collection of data

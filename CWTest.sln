@@ -19,9 +19,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{192A4032-469D-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoreFunctionality", "CoreFunctionality", "{299ACD0F-6540-4F5F-A062-C020F2CA3CCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataServiceProvider.Core", "DataServiceProvider\DataServiceProvider.Core.csproj", "{F1B9BFC8-93FA-4716-A5DE-97E2C6FAF7AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataServiceProvider.Core", "DataServiceProvider\DataServiceProvider.Core.csproj", "{F1B9BFC8-93FA-4716-A5DE-97E2C6FAF7AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataServiceProcider.Sqlite", "DataServiceProcider.Sqlite\DataServiceProcider.Sqlite.csproj", "{6C103DA6-2330-4AEA-875F-EAA592B27FF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataServiceProvider.TestBench", "DataServiceProcider.Sqlite\DataServiceProvider.TestBench.csproj", "{6C103DA6-2330-4AEA-875F-EAA592B27FF4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess.Core", "DataAccess.Core\DataAccess.Core.csproj", "{C1B96F21-2540-489C-9854-093CB49BA243}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess.Sql", "DataAccess.Sql\DataAccess.Sql.csproj", "{647F7633-576D-4E1A-BB9D-A20BA83425C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,14 @@ Global
 		{6C103DA6-2330-4AEA-875F-EAA592B27FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C103DA6-2330-4AEA-875F-EAA592B27FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C103DA6-2330-4AEA-875F-EAA592B27FF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1B96F21-2540-489C-9854-093CB49BA243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1B96F21-2540-489C-9854-093CB49BA243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1B96F21-2540-489C-9854-093CB49BA243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1B96F21-2540-489C-9854-093CB49BA243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{647F7633-576D-4E1A-BB9D-A20BA83425C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{647F7633-576D-4E1A-BB9D-A20BA83425C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{647F7633-576D-4E1A-BB9D-A20BA83425C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{647F7633-576D-4E1A-BB9D-A20BA83425C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +76,8 @@ Global
 		{9BB0DCDF-6ED0-46A0-A238-859A0F08AE2F} = {72D6401D-EB14-443F-8283-0F6A9C0B495A}
 		{F1B9BFC8-93FA-4716-A5DE-97E2C6FAF7AB} = {57D2EE78-F2E5-4CF2-BB9C-C847782D35A9}
 		{6C103DA6-2330-4AEA-875F-EAA592B27FF4} = {57D2EE78-F2E5-4CF2-BB9C-C847782D35A9}
+		{C1B96F21-2540-489C-9854-093CB49BA243} = {57D2EE78-F2E5-4CF2-BB9C-C847782D35A9}
+		{647F7633-576D-4E1A-BB9D-A20BA83425C4} = {57D2EE78-F2E5-4CF2-BB9C-C847782D35A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40B7532D-0446-49FE-AFA2-FF88D026E3FC}

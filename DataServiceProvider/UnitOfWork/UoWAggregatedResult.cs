@@ -1,4 +1,4 @@
-﻿namespace DataServiceProvider.UnitOfWork
+﻿namespace DataServiceProvider.Core.UnitOfWork
 {
   public class UoWAggregatedResult
   {

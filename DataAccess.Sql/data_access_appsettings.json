@@ -1,0 +1,6 @@
+{
+  "ConnectionStrings": {
+    "MSSql": "Data Source=localhost\\SQLEXPRESS;Initial Catalog=TestDb;Integrated Security=True",
+    "Sqlite": "Data Source=LocalSqliteDb.db;"
+  }
+}

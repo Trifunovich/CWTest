@@ -20,6 +20,8 @@ namespace LoggingLibrary.DiResolver
     public static ContainerBuilder ResolveLogger(this ContainerBuilder builder)
     {
       LoggerConfiguration config = new LoggerConfiguration().ReadFrom.Configuration(Configure("serilog.json"));
+
+      //we swap microsoft loggers for serilog
       builder.RegisterSerilog(config);
       builder.RegisterGeneric(typeof(LoggerWrapper<>)).As(typeof(IBasicLogger<>));
       return builder;

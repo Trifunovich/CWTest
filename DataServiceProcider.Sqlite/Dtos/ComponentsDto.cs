@@ -1,9 +1,7 @@
-﻿using DataServiceProvider.Core.DtoAbstraction;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using DataServiceProvider.Core.DtoAbstraction;
 
-namespace DataServiceProcider.Sqlite.Dtos
+namespace DataServiceProvider.TestBench.Dtos
 {
   public class ComponentsDto : GuidBasedDto
   {

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using CwTest.Ui.Shared.DependencyInjection;
 using CWTest.Ui.WPF.ViewModel.Controls;
 
 namespace CWTest.Ui.WPF.DependencyInjection

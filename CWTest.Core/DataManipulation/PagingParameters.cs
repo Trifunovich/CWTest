@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataServiceProvider.UnitOfWork
+namespace CWTest.Core.DataManipulation
 {
   /// <summary>
   /// Configuration for paged loading

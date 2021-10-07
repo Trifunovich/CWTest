@@ -1,5 +1,5 @@
-﻿using DataServiceProvider.Core.DtoAbstraction;
-using DataServiceProvider.UnitOfWork;
+﻿using CWTest.Core.DataManipulation;
+using DataServiceProvider.Core.DtoAbstraction;
 using LoggingLibrary;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace DataServiceProvider.Core.UnitOfWork
 {
-  public abstract class UnitOfWorkBase<T, TId> : IUnitOfWork<T, TId> where T : IDto<TId>
+  public abstract class UnitOfWorkBase<T> : IUnitOfWork<T> where T : IDto
   {
-    private IList<T> _dirtyList = new List<T>();
-    private List<T> _insertList = new List<T>();
-    private ConcurrentDictionary<IdAbstraction<TId>, bool> _deleteList = new ConcurrentDictionary<IdAbstraction<TId>, bool>();
+    private readonly IList<T> _dirtyList = new List<T>();
+    private readonly List<T> _insertList = new List<T>();
+    private readonly ConcurrentDictionary<IDAbstraction, bool> _deleteList = new ConcurrentDictionary<IDAbstraction, bool>();
 
-    private readonly IBasicLogger<UnitOfWorkBase<T, TId>> _logger;
+    private readonly IBasicLoggerAbstract _logger;
 
-    public UnitOfWorkBase(IBasicLogger<UnitOfWorkBase<T, TId>> logger)
+    public UnitOfWorkBase(IBasicLoggerAbstract logger)
     {
       _logger = logger;
     }
@@ -57,7 +57,7 @@ namespace DataServiceProvider.Core.UnitOfWork
         }, "Uow element cleaning", item.Id.ValueAsString);
     }
 
-    public bool RegisterDirty(T item, IdAbstraction<TId> id)
+    public bool RegisterDirty(T item)
     {
       return RegisterAndLog(
        () =>
@@ -68,7 +68,7 @@ namespace DataServiceProvider.Core.UnitOfWork
          }
 
          return true;
-       }, "Uow element clean", item.Id.ValueAsString);     
+       }, "Uow element marked as dirty", item.Id.ValueAsString);     
     }
 
     public bool RegisterInsert(IEnumerable<T> records)
@@ -90,9 +90,9 @@ namespace DataServiceProvider.Core.UnitOfWork
       }, "Inserting elements into UoW cache", records.Count().ToString());
     }
 
-    public bool RegisterRemove(IdAbstraction<TId> id, bool softRemove)
+    public bool RegisterRemove(IDAbstraction id, bool softRemove)
     {
-      return RegisterAndLog(
+     return RegisterAndLog(
      () =>
      {
        if (!_deleteList.Keys.Contains(id))
@@ -113,46 +113,20 @@ namespace DataServiceProvider.Core.UnitOfWork
       return Task.FromResult(UoWRegisterResult.Successfull);
     }
 
-    public Task<IEnumerable<T>> GetAll(bool? isActive = true)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<IEnumerable<T>> GetAll(bool? isActive = true);
 
-    public Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true);
 
-    public Task<IEnumerable<T>> GetAll(Predicate<T> filter)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<IEnumerable<T>> GetAll(Predicate<T> filter);
 
-    public Task<T> GetFirst(Predicate<T> filter)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<T> GetFirst(Predicate<T> filter);
 
-    public Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true);
 
-    public Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, Predicate<T> filter)
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, Predicate<T> filter);
 
+    public abstract Task<UoWAggregatedResult> RevertAll();
 
-
-    public Task<UoWAggregatedResult> RevertAll()
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task<UoWAggregatedResult> SaveChanges()
-    {
-      throw new NotImplementedException();
-    }
+    public abstract Task<UoWAggregatedResult> SaveChanges();
   }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DataServiceProvider.Core.DtoAbstraction
+namespace CWTest.Core.DataManipulation
 {
-  public class GuidAbstraction : IdAbstraction<Guid>
+  public class GuidAbstraction : ITypedIdAbstraction<Guid>
   {
     private Guid _id;
     public Guid Value => _id;

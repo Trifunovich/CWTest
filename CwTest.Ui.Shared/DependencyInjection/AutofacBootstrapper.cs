@@ -1,11 +1,11 @@
-﻿using Autofac;
-using CWTest.Core.DependencyInjection;
-using Stylet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Autofac;
+using CWTest.Core.DependencyInjection;
+using Stylet;
 
-namespace CWTest.Ui.WPF.DependencyInjection
+namespace CwTest.Ui.Shared.DependencyInjection
 {
   public class AutofacBootstrapper<TRootViewModel> : BootstrapperBase where TRootViewModel : class
   {
@@ -14,15 +14,15 @@ namespace CWTest.Ui.WPF.DependencyInjection
     private object _rootViewModel;
     protected virtual object RootViewModel
     {
-      get { return this._rootViewModel ?? (this._rootViewModel = this.GetInstance(typeof(TRootViewModel))); }
+      get { return _rootViewModel ?? (_rootViewModel = GetInstance(typeof(TRootViewModel))); }
     }
 
     protected override void ConfigureBootstrapper()
     {
       var builder = new ContainerBuilder();
-      this.DefaultConfigureIoC(builder);
-      this.ConfigureIoC(builder);
-      this.container = builder.Build();
+      DefaultConfigureIoC(builder);
+      ConfigureIoC(builder);
+      container = builder.Build();
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ namespace CWTest.Ui.WPF.DependencyInjection
     {
       var viewManagerConfig = new ViewManagerConfig()
       {
-        ViewFactory = this.GetInstance,
-        ViewAssemblies = new List<Assembly>() { this.GetType().Assembly }
+        ViewFactory = GetInstance,
+        ViewAssemblies = new List<Assembly>() { GetType().Assembly }
       };
       builder.RegisterInstance<IViewManager>(new ViewManager(viewManagerConfig));
 
@@ -41,7 +41,7 @@ namespace CWTest.Ui.WPF.DependencyInjection
       builder.RegisterType<WindowManager>().As<IWindowManager>().SingleInstance();
       builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
       builder.RegisterType<MessageBoxViewModel>().As<IMessageBoxViewModel>().ExternallyOwned(); // Not singleton!
-      builder.RegisterAssemblyTypes(this.GetType().Assembly).ExternallyOwned();
+      builder.RegisterAssemblyTypes(GetType().Assembly).ExternallyOwned();
     }
 
     /// <summary>
@@ -58,19 +58,19 @@ namespace CWTest.Ui.WPF.DependencyInjection
       {
         ConfigureBootstrapper();
       }
-      return this.container.Resolve(type);
+      return container.Resolve(type);
     }
 
     protected override void Launch()
     {
-      base.DisplayRootView(this.RootViewModel);
+      base.DisplayRootView(RootViewModel);
     }
 
     public override void Dispose()
     {
-      ScreenExtensions.TryDispose(this._rootViewModel);
-      if (this.container != null)
-        this.container.Dispose();
+      ScreenExtensions.TryDispose(_rootViewModel);
+      if (container != null)
+        container.Dispose();
 
       base.Dispose();
     }

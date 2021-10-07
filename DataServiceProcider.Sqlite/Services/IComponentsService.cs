@@ -1,79 +1,60 @@
-﻿using DataServiceProcider.Sqlite.Dtos;
-using DataServiceProvider.Core.DtoAbstraction;
-using DataServiceProvider.UnitOfWork;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CWTest.Core.DataManipulation;
+using DataServiceProvider.Core.UnitOfWork;
+using DataServiceProvider.TestBench.Dtos;
+using LoggingLibrary;
 
-namespace DataServiceProcider.Sqlite.Services
+namespace DataServiceProvider.TestBench.Services
 {
-  public interface IComponentsService : IUnitOfWork<ComponentsDto, Guid>
+  public interface IComponentsService : IUnitOfWork<ComponentsDto>
   {
   }
 
-  internal class ComponentsService : IComponentsService
+  internal class ComponentsService : UnitOfWorkBase<ComponentsDto>
   {
-    public Task<UoWRegisterResult> CleanChanges()
+    public ComponentsService(IBasicLogger<ComponentsService> logger) : base(logger)
+    {
+
+    }
+
+    public override Task<IEnumerable<ComponentsDto>> GetPage(PagingParameters pagingParameters, Predicate<ComponentsDto> filter)
     {
       throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ComponentsDto>> GetAll(bool? isActive = true)
+    public override Task<UoWAggregatedResult> RevertAll()
     {
       throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ComponentsDto>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true)
+    public override Task<UoWAggregatedResult> SaveChanges()
     {
       throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ComponentsDto>> GetAll(Predicate<ComponentsDto> filter)
+    public override Task<IEnumerable<ComponentsDto>> GetAll(bool? isActive = true)
     {
       throw new NotImplementedException();
     }
 
-    public Task<ComponentsDto> GetFirst(Predicate<ComponentsDto> filter)
+    public override Task<IEnumerable<ComponentsDto>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true)
     {
       throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ComponentsDto>> GetPage(PagingParameters pagingParameters, bool? isActive = true)
+    public override Task<IEnumerable<ComponentsDto>> GetAll(Predicate<ComponentsDto> filter)
     {
       throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ComponentsDto>> GetPage(PagingParameters pagingParameters, Predicate<ComponentsDto> filter)
+    public override Task<ComponentsDto> GetFirst(Predicate<ComponentsDto> filter)
     {
       throw new NotImplementedException();
     }
 
-    public Task RegisterClean(ComponentsDto item)
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task RegisterDirty(ComponentsDto item, IdAbstraction<Guid> id)
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task RegisterInsert(IEnumerable<ComponentsDto> records)
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task RegisterRemove(IdAbstraction<Guid> id, bool softRemove)
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task<UoWAggregatedResult> RevertAll()
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task<UoWAggregatedResult> SaveChanges()
+    public override Task<IEnumerable<ComponentsDto>> GetPage(PagingParameters pagingParameters, bool? isActive = true)
     {
       throw new NotImplementedException();
     }
