@@ -19,13 +19,8 @@ namespace DataServiceProvider.TestBench.Services
 
     internal class ComponentsService : UnitOfWorkBase<ComponentsDto, IComponentSpecification>, IComponentsService
     {
-        private readonly IDataRepository<IComponentSpecification> _repo;
-
-        public ComponentsService(IBasicLogger<ComponentsService> logger, 
-            IDataRepository<IComponentSpecification> repo,
-            IMapper mapper) : base(logger, repo, mapper)
+        public ComponentsService(IBasicLogger<ComponentsService> logger, ILoadingDataRepository<IComponentSpecification> loadRepo, IStoringDataRepository<IComponentSpecification> storeRepo, IMapper mapper) : base(logger, loadRepo, storeRepo, mapper)
         {
-            _repo = repo;
         }
     }
 }

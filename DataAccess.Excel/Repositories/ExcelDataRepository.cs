@@ -13,16 +13,15 @@ using LoggingLibrary;
 
 namespace DataAccess.Excel.Repositories
 {
-    abstract class ExcelDataRepository<T> : DataRepositoryBase<T>, IDataRepository<T> where T : class, IDataModel
+    abstract class ExcelDataRepository<T> : LoadingDataRepositoryBase<T> where T : class, IDataModel
     {
         private readonly IExcelContext _context;
         private readonly IExtractor _extractor;
 
-        protected ExcelDataRepository(IExcelContext context, IExtractor extractor, IBasicLoggerAbstract logger, IRepositoryInputValidator inputValidator) : base(logger, inputValidator)
+        protected ExcelDataRepository(IExcelContext context, IExtractor extractor, IBasicLoggerAbstract logger, IRepositoryInputValidator inputValidator) : base(inputValidator, logger)
         {
             _context = context;
             _extractor = extractor;
-            Transaction = null;
             LogStartedRepo();
         }
 
@@ -49,25 +48,7 @@ namespace DataAccess.Excel.Repositories
         protected override Func<Predicate<T>, Task<T>> GetFirstAfterFilterFunction =>
             async (crit) =>
                 null;
-
-        protected override Func<IEnumerable<T>, Task<int?>> GetInsertFunction =>
-        async (records) =>
-            null;
-
-        protected override Func<T, Task<int?>> GetAddFunction =>
-          async (record) =>
-              null;
-
-        protected override Func<T, Task<int?>> GetHardDeleteByValueFunction =>
-          async (record) => await HardDeleteById(record.IdAbstraction);
-
-        protected override Func<T, Task<int?>> GetUpdateFunction =>
-          async (record) =>
-              null;
-
-        protected override Func<Task<int?>> GetSaveChangesFunction =>
-          async () => null;
-
+        
         protected override Func<PagingParameters, bool?, Task<IList<T>>> GetPageFunction =>
           async (PagingParameters pager, bool? isActive) =>
               null;
@@ -76,13 +57,5 @@ namespace DataAccess.Excel.Repositories
         protected override Func<IDAbstraction, bool?, Task<T>> GetByIdFunction =>
           async (id, isActive) =>
               null;
-
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            //DbContext?.Dispose();
-            LogDisposedRepo();
         }
-    }
 }

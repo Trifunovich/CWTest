@@ -21,13 +21,15 @@ namespace DataServiceProvider.Core.UnitOfWork
         private readonly ConcurrentDictionary<IDAbstraction, bool> _deleteList = new ConcurrentDictionary<IDAbstraction, bool>();
 
         private readonly IBasicLoggerAbstract _logger;
-        private readonly IDataRepository<U> _repository;
+        private readonly ILoadingDataRepository<U> _loadRepo;
+        private readonly IStoringDataRepository<U> _storeRepo;
         private readonly IMapper _mapper;
 
-        protected UnitOfWorkBase(IBasicLoggerAbstract logger, IDataRepository<U> repository, IMapper mapper)
+        protected UnitOfWorkBase(IBasicLoggerAbstract logger, ILoadingDataRepository<U> loadRepo, IStoringDataRepository<U> storeRepo, IMapper mapper)
         {
             _logger = logger;
-            _repository = repository;
+            _loadRepo = loadRepo;
+            _storeRepo = storeRepo;
             _mapper = mapper;
         }
 
@@ -123,41 +125,41 @@ namespace DataServiceProvider.Core.UnitOfWork
 
         public virtual async Task<IEnumerable<T>> GetAll(bool? isActive = true)
         {
-            var rawModels = await _repository.GetAll(isActive);
+            var rawModels = await _loadRepo.GetAll(isActive);
             return MapList<T, U>(rawModels);
         }
 
         public virtual async Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true)
         {
-            var rawModels = await _repository.GetAll(createdAfter, createdBefore, isActive);
+            var rawModels = await _loadRepo.GetAll(createdAfter, createdBefore, isActive);
             return MapList<T, U>(rawModels);
         }
 
         public virtual async Task<IEnumerable<T>> GetAll(int internalId)
         {
-            var rawModels = await _repository.GetAll(x => x.InternalId == internalId);
+            var rawModels = await _loadRepo.GetAll(x => x.InternalId == internalId);
             return MapList<T, U>(rawModels);
         }
 
         public virtual async Task<T> GetFirst(int internalId)
         {
-            return MapOneElement<T, U>(await _repository.GetFirst(x => x.InternalId == internalId));
+            return MapOneElement<T, U>(await _loadRepo.GetFirst(x => x.InternalId == internalId));
         }
 
         public virtual async Task<T> GetFirst(string label)
         {
-            return MapOneElement<T, U>(await _repository.GetFirst(x => x.Label.Equals(label, StringComparison.InvariantCultureIgnoreCase)));
+            return MapOneElement<T, U>(await _loadRepo.GetFirst(x => x.Label.Equals(label, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         public virtual async Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true)
         {
-            var rawModels = await _repository.GetPage(pagingParameters, isActive);
+            var rawModels = await _loadRepo.GetPage(pagingParameters, isActive);
             return MapList<T, U>(rawModels);
         }
 
         public virtual async Task<UoWAggregatedResult> RevertAll()
         {
-            var result = await _repository.RevertAll();
+            var result = await _storeRepo.RevertAll();
             return GetResultBasedOnInt(result, "Failed to revert transactions");
         }
 
@@ -171,7 +173,7 @@ namespace DataServiceProvider.Core.UnitOfWork
                 foreach (var d in _dirtyList)
                 {
                     var mapped = MapOneElement<U, T>(d);
-                    var updatingSuccess = await _repository.UpdateRecord(mapped);
+                    var updatingSuccess = await _storeRepo.UpdateRecord(mapped);
 
                     if (updatingSuccess != 1)
                     {
@@ -184,7 +186,7 @@ namespace DataServiceProvider.Core.UnitOfWork
             {
                 actuallyDidSomething = true;
                 var mapped = MapList<U, T>(_insertList);
-                var insertingSuccess = await _repository.Insert(mapped);
+                var insertingSuccess = await _storeRepo.Insert(mapped);
 
                 if (insertingSuccess != 1)
                 {
@@ -197,7 +199,7 @@ namespace DataServiceProvider.Core.UnitOfWork
                 actuallyDidSomething = true;
                 foreach (var d in _deleteList)
                 {
-                    var deleteSuccess = d.Value ? await _repository.HardDeleteById(d.Key) : await _repository.DeleteById(d.Key);
+                    var deleteSuccess = d.Value ? await _storeRepo.HardDeleteById(d.Key) : await _storeRepo.DeleteById(d.Key);
 
                     if (deleteSuccess != 1)
                     {
@@ -208,7 +210,7 @@ namespace DataServiceProvider.Core.UnitOfWork
 
             if (actuallyDidSomething)
             {
-                var result = await _repository.SaveChanges();
+                var result = await _storeRepo.SaveChanges();
                 return GetResultBasedOnInt(result, "Failed to save data");
             }
             

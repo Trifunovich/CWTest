@@ -13,57 +13,66 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace DataAccess.Sql.Services
 {
-  public static class ServiceCollectionExtension
-  {
-    private static void ResolveRepos<T>(ContainerBuilder builder) where T : SqlDataModelBase
+    public static class ServiceCollectionExtension
     {
-      switch (typeof(T))
-      {
-        case { } componentModel when componentModel == typeof(ComponentSpecification):
-          builder.RegisterType(typeof(ComponentsDataRepository)).As<IDataRepository<IComponentSpecification>>();
-          break;
-        default:
-          builder.RegisterType(typeof(EfDataRepository<T>)).As<IDataRepository<T>>();
-          break;
-      }
-    }
-
-    public static ContainerBuilder AddSqlDataAccessInternals(this ContainerBuilder builder)
-    {
-      builder.RegisterType<EfContextFactory>().As<IEfContextFactory>().SingleInstance();
-      builder.RegisterType(typeof(SqlConnectionFactory)).As(typeof(ISqlConnectionFactory)).SingleInstance();
-      builder.RegisterGeneric(typeof(DapperResolver<>)).As(typeof(IDapperResolver<>)).SingleInstance();
-      
-      RegisterContext<SqlEfContext>(builder);
-      
-      ResolveRepos<ComponentSpecification>(builder);
-
-      builder.AddDataAccessCoreInternals();
-
-      return builder;
-    }
-
-
-    private static void RegisterContext<TContext>(ContainerBuilder builder)
-      where TContext : DbContext
-    {
-      builder.Register(componentContext =>
+        public static ContainerBuilder AddSqlDataAccessInternals(this ContainerBuilder builder, DataAccessRegistrationType daType)
         {
-          var dbContextOptions = new DbContextOptions<TContext>(new Dictionary<Type, IDbContextOptionsExtension>());
-          var optionsBuilder = new DbContextOptionsBuilder<TContext>(dbContextOptions)
-            .UseSqlServer(ConnectionHelper.SqlConnectionString);
+            builder.RegisterType<EfContextFactory>().As<IEfContextFactory>().SingleInstance();
+            builder.RegisterType(typeof(SqlConnectionFactory)).As(typeof(ISqlConnectionFactory)).SingleInstance();
+            builder.RegisterGeneric(typeof(DapperResolver<>)).As(typeof(IDapperResolver<>)).SingleInstance();
 
-          return optionsBuilder.Options;
-        }).As<DbContextOptions<TContext>>()
-        .InstancePerLifetimeScope();
+            RegisterContext<SqlEfContext>(builder);
 
-      builder.Register(context => context.Resolve<DbContextOptions<TContext>>())
-        .As<DbContextOptions>()
-        .InstancePerLifetimeScope();
+            switch (daType)
+            {
+                case DataAccessRegistrationType.Loading:
+                    builder.RegisterLoadingRepos();
+                    break;
+                case DataAccessRegistrationType.Storing:
+                    builder.RegisterStoringRepos();
+                    break;
+                case DataAccessRegistrationType.All:
+                    builder.RegisterLoadingRepos();
+                    builder.RegisterStoringRepos();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(daType), daType, null);
+            }
 
-      builder.RegisterType<TContext>()
-        .AsSelf()
-        .InstancePerLifetimeScope();
+            builder.AddDataAccessCoreInternals();
+
+            return builder;
+        }
+
+        private static void RegisterLoadingRepos(this ContainerBuilder builder)
+        {
+            builder.RegisterType(typeof(LoadingComponentsDbRepository)).As<ILoadingDataRepository<IComponentSpecification>>();
+        }
+        private static void RegisterStoringRepos(this ContainerBuilder builder)
+        {
+            builder.RegisterType(typeof(StoringComponentsDbRepository)).As<IStoringDataRepository<IComponentSpecification>>();
+        }
+
+        private static void RegisterContext<TContext>(ContainerBuilder builder)
+          where TContext : DbContext
+        {
+            builder.Register(componentContext =>
+              {
+                  var dbContextOptions = new DbContextOptions<TContext>(new Dictionary<Type, IDbContextOptionsExtension>());
+                  var optionsBuilder = new DbContextOptionsBuilder<TContext>(dbContextOptions)
+              .UseSqlServer(ConnectionHelper.SqlConnectionString);
+
+                  return optionsBuilder.Options;
+              }).As<DbContextOptions<TContext>>()
+              .InstancePerLifetimeScope();
+
+            builder.Register(context => context.Resolve<DbContextOptions<TContext>>())
+              .As<DbContextOptions>()
+              .InstancePerLifetimeScope();
+
+            builder.RegisterType<TContext>()
+              .AsSelf()
+              .InstancePerLifetimeScope();
+        }
     }
-  }
 }

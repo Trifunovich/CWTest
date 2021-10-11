@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CWTest.Core.DataManipulation;
+using LoggingLibrary;
 
 namespace DataAccess.Core.Abstractions
 {
-    public interface IDataRepository<T> : IDisposable where T : IDataModel
+    public interface IDbRepo : IDisposable
+    {
+    }
+
+    public interface IDatabaseRepository<T> : ILoadingDataRepository<T>, IStoringDataRepository<T>
+        where T : class, IDataModel
+    {
+
+    }
+
+
+    public interface ILoadingDataRepository<T> : IDbRepo where T : IDataModel
     {
         Task<T> GetById(IDAbstraction id, bool? isActive = true);
-
-        Task<int?> DeleteById(IDAbstraction id);
-
-        Task<int?> HardDeleteById(IDAbstraction id);
 
         Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true);
 
@@ -22,11 +30,17 @@ namespace DataAccess.Core.Abstractions
 
         Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true);
 
-
-
         Task<T> GetFirst(Predicate<T> filter);
 
         Task<T> GetByLabel(string label, bool? isActive = true);
+
+    }
+
+    public interface IStoringDataRepository<T> : IDbRepo where T : IDataModel
+    {
+        Task<int?> DeleteById(IDAbstraction id);
+
+        Task<int?> HardDeleteById(IDAbstraction id);
 
         Task<int?> Insert(IEnumerable<T> records);
 
@@ -45,6 +59,6 @@ namespace DataAccess.Core.Abstractions
         void SetCancellationToken(CancellationTokenSource cancellationTokenSource);
 
         Task<int?> RevertAll();
-
     }
+
 }

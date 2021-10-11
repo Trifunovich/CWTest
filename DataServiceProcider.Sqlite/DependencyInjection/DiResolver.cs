@@ -13,18 +13,18 @@ namespace DataServiceProvider.TestBench.DependencyInjection
     {
         public static ContainerBuilder RegisterDataServiceProviderDependencies(this ContainerBuilder builder)
         {
-            DataSourceType type = GetDataSourceType();
+            var types = GetDataSourceType();
 
-            switch (type)
+            var loadType = types.Item1;
+
+            if (loadType == DataSourceType.Excel)
             {
-                case DataSourceType.Sql:
-                    builder.AddSqlDataAccessInternals();
-                    break;
-                case DataSourceType.Excel:
-                    builder.AddExcelAccessInternals();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                builder.AddExcelAccessInternals();
+                builder.AddSqlDataAccessInternals(DataAccessRegistrationType.Storing);
+            }
+            else
+            {
+                builder.AddSqlDataAccessInternals(DataAccessRegistrationType.All);
             }
 
             builder.RegisterType<ComponentsService>().As<IComponentsService>();
@@ -33,11 +33,12 @@ namespace DataServiceProvider.TestBench.DependencyInjection
             return builder;
         }
 
-        private static DataSourceType GetDataSourceType()
+        private static Tuple<DataSourceType, DataSourceType> GetDataSourceType()
         {
-            IConfiguration config = ConfigHelper.Configure("DataServiceProviderConfig.json");
-            DataSourceType typeVal = config.GetValue<DataSourceType>(nameof(DataSourceType));
-            return typeVal;
+            IConfiguration config = ConfigHelper.Configure(@"appsettings.json");
+            DataSourceType loadVal = config.GetValue<DataSourceType>("SystemForLoading");
+            DataSourceType saveVal = config.GetValue<DataSourceType>("SystemForSaving");
+            return new Tuple<DataSourceType, DataSourceType>(loadVal, saveVal);
         }
     }
 }

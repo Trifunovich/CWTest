@@ -9,41 +9,22 @@ using CWTest.Core.DataManipulation;
 using DataAccess.Core.Validation;
 using LoggingLibrary;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace DataAccess.Core.Abstractions
 {
-    public abstract class DataRepositoryBase<T> : IDataRepository<T> where T : IDataModel
+    public abstract class DbRepoBase<T> where T : IDataModel
     {
-        protected readonly IBasicLoggerAbstract Logger;
+        protected IBasicLoggerAbstract Logger;
         protected readonly IRepositoryInputValidator InputValidator;
         protected DbTransaction Transaction;
-
         protected CancellationTokenSource TokenSource = new CancellationTokenSource();
 
-        private async void OnCancel()
+        protected DbRepoBase(IRepositoryInputValidator inputValidator, IBasicLoggerAbstract logger)
         {
-            Logger?.LogInformation("Cancellation requested");
-            await Rollback();
-        }
-
-        protected DataRepositoryBase(IBasicLoggerAbstract logger, IRepositoryInputValidator inputValidator)
-        {
+            InputValidator = inputValidator;
             Logger = logger;
-            this.InputValidator = inputValidator;
         }
-
-        protected abstract Func<bool?, Task<IList<T>>> GetAllFunction { get; }
-        protected abstract Func<Predicate<T>, Task<IList<T>>> GetAllWithFilterFunction { get; }
-        protected abstract Func<Predicate<T>, Task<T>> GetFirstAfterFilterFunction { get; }
-        protected abstract Func<DateTime, DateTime?, bool?, Task<IList<T>>> GetAllFunctionWithDates { get; }
-        protected abstract Func<string, bool?, Task<T>> GetByLabelFunction { get; }
-        protected abstract Func<IEnumerable<T>, Task<int?>> GetInsertFunction { get; }
-        protected abstract Func<T, Task<int?>> GetAddFunction { get; }
-        protected abstract Func<T, Task<int?>> GetHardDeleteByValueFunction { get; }
-        protected abstract Func<T, Task<int?>> GetUpdateFunction { get; }
-        protected abstract Func<Task<int?>> GetSaveChangesFunction { get; }
-
-        protected abstract Func<PagingParameters, bool?, Task<IList<T>>> GetPageFunction { get; }
 
         protected abstract Func<IDAbstraction, bool?, Task<T>> GetByIdFunction { get; }
 
@@ -66,29 +47,46 @@ namespace DataAccess.Core.Abstractions
             return default; ;
         }
 
-
-        private async Task<int?> DeleteByIdImpl(IDAbstraction id, bool isHard)
+        protected void LogGotOneFromDatabase(T one)
         {
-            if (InputValidator.ValidateGenericId(id))
-            {
-                T found = await GetById(id, null);
-                return await DeleteByValueImpl(found, isHard);
-            }
-
-            LogNoId(id);
-            return default;
+            Logger?.LogInformation("Got {one} from the repo", one);
+        }
+        protected void LogNoId(object id)
+        {
+            Logger?.LogError("IdAbstraction with value {id} not found for type {typename}", id, typeof(T).Name);
+        }
+        protected void LogStartedRepo()
+        {
+            Logger.LogInformation("Repo created for {name}", typeof(T).Name);
+        }
+        protected void LogDisposedRepo()
+        {
+            Logger?.LogInformation("Disposed {name} repo", typeof(T).Name);
         }
 
-        public virtual async Task<int?> DeleteById(IDAbstraction id)
+        public virtual void Dispose()
         {
-            return await DeleteByIdImpl(id, false);
+            Transaction?.Dispose();
+            Transaction = null;
+            TokenSource?.Dispose();
+            TokenSource = null;
+            Logger?.LogInformation("Resources in data repository base of type {name} disposed", typeof(T).Name);
+        }
+    }
+
+    public abstract class LoadingDataRepositoryBase<T> : DbRepoBase<T>, ILoadingDataRepository<T> where T : IDataModel
+    {
+        protected LoadingDataRepositoryBase(IRepositoryInputValidator inputValidator, IBasicLoggerAbstract logger) : base(inputValidator, logger)
+        {
         }
 
-        public virtual async Task<int?> HardDeleteById(IDAbstraction id)
-        {
-            return await DeleteByIdImpl(id, true);
-        }
-
+        protected abstract Func<bool?, Task<IList<T>>> GetAllFunction { get; }
+        protected abstract Func<Predicate<T>, Task<IList<T>>> GetAllWithFilterFunction { get; }
+        protected abstract Func<Predicate<T>, Task<T>> GetFirstAfterFilterFunction { get; }
+        protected abstract Func<DateTime, DateTime?, bool?, Task<IList<T>>> GetAllFunctionWithDates { get; }
+        protected abstract Func<string, bool?, Task<T>> GetByLabelFunction { get; }
+        protected abstract Func<PagingParameters, bool?, Task<IList<T>>> GetPageFunction { get; }
+        
         public virtual async Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true)
         {
             if (InputValidator.ValidatePagingParams(pagingParameters))
@@ -117,9 +115,6 @@ namespace DataAccess.Core.Abstractions
 
             return default;
         }
-
-
-
         public virtual async Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true)
         {
             bool areParamsValid = InputValidator.ValidateGetAllParams(createdAfter, createdBefore);
@@ -173,12 +168,60 @@ namespace DataAccess.Core.Abstractions
             return default;
         }
 
+        protected void LogGotAll(int count)
+        {
+            Logger?.LogInformation("Got {count} of {TypeName} from the repo", count, typeof(T).Name);
+        }
+    }
+
+    public abstract class StoringDataRepositoryBase<T> : DbRepoBase<T> , IStoringDataRepository<T> where T : IDataModel
+    {
+
+        protected StoringDataRepositoryBase(IRepositoryInputValidator inputValidator, IBasicLoggerAbstract logger) : base(inputValidator, logger)
+        {
+        }
+
+        protected abstract Func<IEnumerable<T>, Task<int?>> InsertFunction { get; }
+        protected abstract Func<T, Task<int?>> AddFunction { get; }
+        protected abstract Func<T, Task<int?>> HardDeleteByValueFunction { get; }
+        protected abstract Func<T, Task<int?>> UpdateFunction { get; }
+        protected abstract Func<Task<int?>> SaveChangesFunction { get; }
+
+        private async void OnCancel()
+        {
+            Logger?.LogInformation("Cancellation requested");
+            await Rollback();
+        }
+
+        private async Task<int?> DeleteByIdImpl(IDAbstraction id, bool isHard)
+        {
+            if (InputValidator.ValidateGenericId(id))
+            {
+                T found = await GetById(id, null);
+                return await DeleteByValueImpl(found, isHard);
+            }
+
+            LogNoId(id);
+            return default;
+        }
+
+        public virtual async Task<int?> DeleteById(IDAbstraction id)
+        {
+            return await DeleteByIdImpl(id, false);
+        }
+
+        public virtual async Task<int?> HardDeleteById(IDAbstraction id)
+        {
+            return await DeleteByIdImpl(id, true);
+        }
+
+
         public virtual async Task<int?> Insert(IEnumerable<T> records)
         {
             var sqlDataModels = records.ToList();
             if (InputValidator.ValidateInputList(sqlDataModels))
             {
-                await GetInsertFunction(sqlDataModels);
+                await InsertFunction(sqlDataModels);
                 LogInsertedIntoDb(sqlDataModels.Count());
                 return sqlDataModels.Count();
             }
@@ -190,7 +233,7 @@ namespace DataAccess.Core.Abstractions
         {
             if (InputValidator.ValidateValue(record))
             {
-                var res = await GetAddFunction(record);
+                var res = await AddFunction(record);
                 LogAddedRecordToDb(record);
                 return res;
             }
@@ -209,7 +252,7 @@ namespace DataAccess.Core.Abstractions
             {
                 if (isHard)
                 {
-                    var res = GetHardDeleteByValueFunction(record);
+                    var res = HardDeleteByValueFunction(record);
                 }
                 else
                 {
@@ -232,7 +275,7 @@ namespace DataAccess.Core.Abstractions
         {
             if (InputValidator.ValidateValue(record))
             {
-                var res = await GetUpdateFunction(record);
+                var res = await UpdateFunction(record);
                 LogUpdatedRecordInDb(record);
                 return res;
             }
@@ -243,7 +286,7 @@ namespace DataAccess.Core.Abstractions
         public virtual async Task<int?> SaveChanges()
         {
             await Apply();
-            var res = await GetSaveChangesFunction.Invoke();
+            var res = await SaveChangesFunction.Invoke();
             LogSavedChanges();
             return res;
         }
@@ -268,36 +311,12 @@ namespace DataAccess.Core.Abstractions
             return 1;
         }
 
-        public virtual void Dispose()
-        {
-            Transaction?.Dispose();
-            TokenSource?.Dispose();
-            Transaction = null;
-            TokenSource = null;
-            Logger?.LogInformation("Resources in data repository base of type {name} disposed", typeof(T).Name);
-        }
-
         protected virtual async Task Rollback()
         {
             //await Transaction.RollbackAsync();
 
             Logger?.LogInformation("Transaction rolled back");
             await Task.CompletedTask;
-        }
-
-        protected void LogStartedRepo()
-        {
-            Logger.LogInformation("Repo created for {name}", typeof(T).Name);
-        }
-
-        protected void LogGotAll(int count)
-        {
-            Logger?.LogInformation("Got {count} of {TypeName} from the repo", count, typeof(T).Name);
-        }
-
-        protected void LogGotOneFromDatabase(T one)
-        {
-            Logger?.LogInformation("Got {one} from the repo", one);
         }
 
         protected void LogInsertedIntoDb(int count)
@@ -329,17 +348,5 @@ namespace DataAccess.Core.Abstractions
         {
             Logger?.LogInformation("Saved changes for {name} repo", typeof(T).Name);
         }
-
-        protected void LogDisposedRepo()
-        {
-            Logger?.LogInformation("Disposed {name} repo", typeof(T).Name);
-        }
-
-        protected void LogNoId(object id)
-        {
-            Logger?.LogError("IdAbstraction with value {id} not found for type {typename}", id, typeof(T).Name);
-        }
-
-
     }
 }

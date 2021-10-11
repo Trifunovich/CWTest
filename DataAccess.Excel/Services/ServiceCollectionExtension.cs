@@ -20,7 +20,7 @@ namespace DataAccess.Excel.Services
             builder.RegisterType<ExcelContext>().As<IExcelContext>().SingleInstance();
             builder.RegisterType<ExcelExtractor>().As<IExtractor>().SingleInstance();
             builder.RegisterType<ExcelConfiguration>().As<IExcelConfiguration>().SingleInstance();
-            builder.RegisterType(typeof(ComponentsDataRepository)).As<IDataRepository<IComponentSpecification>>();
+            builder.RegisterType(typeof(ComponentsDataRepository)).As<ILoadingDataRepository<IComponentSpecification>>();
 
             builder.AddDataAccessCoreInternals();
 
