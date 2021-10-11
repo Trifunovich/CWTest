@@ -15,6 +15,11 @@ namespace DataAccess.Sql.Models
     [NotMapped]
     public override IDAbstraction IdAbstraction => _idAbstraction ??= new GuidAbstraction(Id);
 
+    public override void SetId(IDAbstraction idAbstraction)
+    { 
+      _idAbstraction = idAbstraction;
+    }
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

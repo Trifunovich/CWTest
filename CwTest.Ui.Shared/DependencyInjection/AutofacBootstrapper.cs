@@ -14,7 +14,7 @@ namespace CwTest.Ui.Shared.DependencyInjection
     private object _rootViewModel;
     protected virtual object RootViewModel
     {
-      get { return _rootViewModel ?? (_rootViewModel = GetInstance(typeof(TRootViewModel))); }
+      get { return _rootViewModel ??= GetInstance(typeof(TRootViewModel)); }
     }
 
     protected override void ConfigureBootstrapper()

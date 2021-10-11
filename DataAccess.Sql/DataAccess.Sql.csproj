@@ -45,6 +45,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CWTest.Core\CWTest.Core.csproj" />
     <ProjectReference Include="..\DataAccess.Core\DataAccess.Core.csproj" />
+    <ProjectReference Include="..\DataAccess.CWTest.Abstraction\DataAccess.CWTest.Abstraction.csproj" />
     <ProjectReference Include="..\LoggingLibrary\LoggingLibrary.csproj" />
 
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

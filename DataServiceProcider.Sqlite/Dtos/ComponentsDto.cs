@@ -1,13 +1,11 @@
 ﻿using System;
+using CWTest.Core.DataManipulation;
 using DataServiceProvider.Core.DtoAbstraction;
 
 namespace DataServiceProvider.TestBench.Dtos
 {
-  public class ComponentsDto : GuidBasedDto
-  {
-    public ComponentsDto(Guid id) : base(id)
+    public class ComponentsDto : DtoBase
     {
 
     }
-  }
 }

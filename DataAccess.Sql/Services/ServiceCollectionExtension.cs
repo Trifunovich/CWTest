@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Autofac;
 using DataAccess.Core.Abstractions;
 using DataAccess.Core.Services;
+using DataAccess.CWTest.Abstraction;
 using DataAccess.Sql.Context;
 using DataAccess.Sql.Helpers;
 using DataAccess.Sql.Models;
@@ -18,8 +19,8 @@ namespace DataAccess.Sql.Services
     {
       switch (typeof(T))
       {
-        case { } componentModel when componentModel == typeof(ComponentModel):
-          builder.RegisterType(typeof(ComponentsDataRepository)).As<IDataRepository<T>>();
+        case { } componentModel when componentModel == typeof(ComponentSpecification):
+          builder.RegisterType(typeof(ComponentsDataRepository)).As<IDataRepository<IComponentSpecification>>();
           break;
         default:
           builder.RegisterType(typeof(EfDataRepository<T>)).As<IDataRepository<T>>();
@@ -35,7 +36,7 @@ namespace DataAccess.Sql.Services
       
       RegisterContext<SqlEfContext>(builder);
       
-      ResolveRepos<ComponentModel>(builder);
+      ResolveRepos<ComponentSpecification>(builder);
 
       builder.AddDataAccessCoreInternals();
 

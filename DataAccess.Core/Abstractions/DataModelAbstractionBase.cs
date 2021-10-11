@@ -8,6 +8,8 @@ namespace DataAccess.Core.Abstractions
   {
     public abstract IDAbstraction IdAbstraction { get;}
 
+    public virtual int InternalId { get; set; }
+
     [MaxLength(100, ErrorMessage = "Label too long")]
     public virtual string Label { get; set; }
 
@@ -16,9 +18,12 @@ namespace DataAccess.Core.Abstractions
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
 
+    public abstract void SetId(IDAbstraction idAbstraction);
+ 
+
     public override string ToString()
     {
-      return $"{Label}, {CreatedOn}, {UpdatedOn}, {IsActive}";
+      return $"{InternalId}, {Label}, {CreatedOn}, {UpdatedOn}, {IsActive}";
     }
   }
 }

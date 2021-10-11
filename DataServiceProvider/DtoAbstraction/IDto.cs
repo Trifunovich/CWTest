@@ -10,7 +10,8 @@ namespace DataServiceProvider.Core.DtoAbstraction
   /// </summary>
   public interface IDto
   {
-    IDAbstraction Id { get;}
+    IDAbstraction Id { get; set; }
+    int InternalId { get; set; }
     string Label { get; set; }
     bool IsActive { get; set; }
     DateTime CreatedOn { get; set; }

@@ -20,7 +20,7 @@ namespace DataAccess.Sql.Context
         optionsBuilder.UseSqlite(connectionString);
     }
 
-    public DbSet<ComponentModel> Components { get; set; }
+    public DbSet<ComponentSpecification> ComponentSpecifications { get; set; }
 
   }
 }

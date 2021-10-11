@@ -1,0 +1,14 @@
+﻿using Microsoft.Extensions.Configuration;
+
+namespace DataAccess.Excel.Context
+{
+    public class ExcelContext : IExcelContext
+    {
+        public string ExcelPath { get; }
+
+        public ExcelContext(IConfiguration config)
+        {
+            ExcelPath = config.GetValue<string>("ExcelPath");
+        }
+    }
+}

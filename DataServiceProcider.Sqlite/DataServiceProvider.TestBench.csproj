@@ -5,8 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataAccess.Excel\DataAccess.Excel.csproj" />
     <ProjectReference Include="..\DataAccess.Sql\DataAccess.Sql.csproj" />
     <ProjectReference Include="..\DataServiceProvider\DataServiceProvider.Core.csproj" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Contrib.Autofac.DependencyInjection" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DataServiceProviderConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

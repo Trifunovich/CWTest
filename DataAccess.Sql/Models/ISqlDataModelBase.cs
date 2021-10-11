@@ -3,7 +3,7 @@ using DataAccess.Core.Abstractions;
 
 namespace DataAccess.Sql.Models
 {
-  interface ISqlDataModelBase : IDataModelBase<Guid>
+  public interface ISqlDataModelBase : IDataModelBase<Guid>
   {
   }
 }

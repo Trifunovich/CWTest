@@ -6,39 +6,45 @@ using CWTest.Core.DataManipulation;
 
 namespace DataAccess.Core.Abstractions
 {
-  public interface IDataRepository<T> : IDisposable where T : IDataModel
-  {
-    Task<T> GetById(IDAbstraction id, bool? isActive = true);
+    public interface IDataRepository<T> : IDisposable where T : IDataModel
+    {
+        Task<T> GetById(IDAbstraction id, bool? isActive = true);
 
-    Task<int?> DeleteById(IDAbstraction id);
+        Task<int?> DeleteById(IDAbstraction id);
 
-    Task<int?> HardDeleteById(IDAbstraction id);
+        Task<int?> HardDeleteById(IDAbstraction id);
 
-    Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true);
+        Task<IEnumerable<T>> GetPage(PagingParameters pagingParameters, bool? isActive = true);
 
-    Task<IEnumerable<T>> GetAll(bool? isActive = true);
+        Task<IEnumerable<T>> GetAll(Predicate<T> filter);
 
-    Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true);
+        Task<IEnumerable<T>> GetAll(bool? isActive = true);
 
-    Task<T> GetByLabel(string label, bool? isActive = true);
+        Task<IEnumerable<T>> GetAll(DateTime createdAfter, DateTime? createdBefore = null, bool? isActive = true);
 
-    Task<int?> Insert(IEnumerable<T> records);
 
-    Task<int?> Add(T record);
 
-    Task<int?> DeleteByValue(T record);
+        Task<T> GetFirst(Predicate<T> filter);
 
-    Task<int?> HardDeleteByValue(T record);
+        Task<T> GetByLabel(string label, bool? isActive = true);
 
-    Task<int?> UpdateRecord(T record);
+        Task<int?> Insert(IEnumerable<T> records);
 
-    Task<int?> SaveChanges();
+        Task<int?> Add(T record);
 
-    Task<int?> Apply();
+        Task<int?> DeleteByValue(T record);
 
-    void SetCancellationToken(CancellationTokenSource cancellationTokenSource);
+        Task<int?> HardDeleteByValue(T record);
 
-    Task<int?> RevertAll();
+        Task<int?> UpdateRecord(T record);
 
-  }
+        Task<int?> SaveChanges();
+
+        Task<int?> Apply();
+
+        void SetCancellationToken(CancellationTokenSource cancellationTokenSource);
+
+        Task<int?> RevertAll();
+
+    }
 }

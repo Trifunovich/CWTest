@@ -5,7 +5,8 @@ namespace DataServiceProvider.Core.DtoAbstraction
 {
   public abstract class DtoBase : IDto
   {
-    public abstract IDAbstraction Id { get;}
+    public IDAbstraction Id { get; set; }
+    public int InternalId { get; set; }
 
     public virtual string Label { get; set; }
 

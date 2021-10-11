@@ -11,5 +11,11 @@
     /// Used for deep logging, in order to get what happened
     /// </summary>
     public string ErrorDescription { get; }
+
+    public UoWAggregatedResult(UoWRegisterResult result, string errorDescription)
+    {
+        Result = result;
+        ErrorDescription = errorDescription;
+    }
   }
 }
