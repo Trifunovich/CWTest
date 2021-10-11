@@ -19,8 +19,7 @@ namespace DataAccess.Excel.Services
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             builder.RegisterType<ExcelContext>().As<IExcelContext>().SingleInstance();
             builder.RegisterType<ExcelExtractor>().As<IExtractor>().SingleInstance();
-
-            IConfiguration config = ConfigHelper.Configure(@"ExcelConfig.json");
+            builder.RegisterType<ExcelConfiguration>().As<IExcelConfiguration>().SingleInstance();
             builder.RegisterType(typeof(ComponentsDataRepository)).As<IDataRepository<IComponentSpecification>>();
 
             builder.AddDataAccessCoreInternals();

@@ -14,6 +14,7 @@ namespace DataServiceProvider.TestBench.Services
 {
     public interface IComponentsService : IUnitOfWork<ComponentsDto>
     {
+
     }
 
     internal class ComponentsService : UnitOfWorkBase<ComponentsDto, IComponentSpecification>, IComponentsService

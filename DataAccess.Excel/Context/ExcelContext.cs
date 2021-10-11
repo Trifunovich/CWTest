@@ -6,9 +6,9 @@ namespace DataAccess.Excel.Context
     {
         public string ExcelPath { get; }
 
-        public ExcelContext(IConfiguration config)
+        public ExcelContext(IExcelConfiguration config)
         {
-            ExcelPath = config.GetValue<string>("ExcelPath");
+            ExcelPath = config.GetValue<string>("ExcelFilePath");
         }
     }
 }
