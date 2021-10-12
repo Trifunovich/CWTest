@@ -22,7 +22,7 @@
             <Button Content="Import" Grid.Column="2" Click="ButtonBase_OnClick"></Button>
         </Grid>
         <Grid Grid.Row="1">
-            <DataGrid Grid.Column="0" ItemsSource ="{Binding ExcelData}"></DataGrid>
+            <DataGrid x:Name="DataGrid"  Grid.Column="0" ItemsSource ="{Binding ExcelData}"></DataGrid>
         </Grid>
     </Grid>
 </Window>

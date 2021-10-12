@@ -21,19 +21,26 @@ namespace DataAccess.Excel.ExcelManipulation
        
         public override Task<Dictionary<string, IList<IExcelDataModel>>> Import(string fileTPath, CancellationToken token)
         {
+            var dict = new Dictionary<string, IList<IExcelDataModel>>();
+
             try
             {
-                var dict = new Dictionary<string, IList<IExcelDataModel>>();
                 token.ThrowIfCancellationRequested();
-
-
                 using XLWorkbook workbook = XLWorkbook.OpenFromTemplate(fileTPath);
                 var sheets = workbook.Worksheets;
                 int wsInd = -1;
                 foreach (var sheet in sheets)
                 {
-                    var rows = sheet.Rows().Skip(2).ToList();
                     wsInd++;
+
+                    if (wsInd > 0)
+                    {
+                        //for now
+                        continue;
+                    }
+
+                    //two rows are header rows
+                    var rows = sheet.Rows().Skip(2).ToList();
                     var dataList = new List<IExcelDataModel>();
                     dict[sheet.Name] = dataList;
 
@@ -53,7 +60,7 @@ namespace DataAccess.Excel.ExcelManipulation
                 RaiseEvent(e.ToString(), 0);
             }
             
-            return null;
+            return Task.FromResult(dict);
         }
 
 
@@ -90,7 +97,7 @@ namespace DataAccess.Excel.ExcelManipulation
                             {
                                 case 1:
                                     {
-                                        model.InternalId = text.TryToParseIntValue();
+                                        model.InternalId = text?.Trim();
                                         break;
                                     }
                                 case 2:
@@ -100,7 +107,7 @@ namespace DataAccess.Excel.ExcelManipulation
                                     }
                                 case 3:
                                     {
-                                        model.ParentId = text.TryToParseIntValue();
+                                        model.ParentId = text.Trim();
                                         break;
                                     }
                                 case 4:

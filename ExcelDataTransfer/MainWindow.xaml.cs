@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Autofac;
+using CWTest.Core.DataManipulation;
+using DataServiceProvider.TestBench.Dtos;
 using DataServiceProvider.TestBench.Services;
 
 namespace ExcelDataTransfer
@@ -35,9 +38,11 @@ namespace ExcelDataTransfer
 
         private IList ExcelData { get; set; }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         { 
-            var a = _service.GetAll();
+            var a = await _service.GetPage(new PagingParameters(1,110));
+            ExcelData = new ObservableCollection<ComponentsDto>(a);
+            DataGrid.ItemsSource = ExcelData;
         }
     }
 }
