@@ -4,26 +4,33 @@ using CWTest.Core.DataManipulation;
 
 namespace DataAccess.Core.Abstractions
 {
-  public abstract class DataModelAbstractionBase : IDataModel
-  {
-    public abstract IDAbstraction IdAbstraction { get;}
-
-    public virtual int InternalId { get; set; }
-
-    [MaxLength(100, ErrorMessage = "Label too long")]
-    public virtual string Label { get; set; }
-
-    public bool IsActive { get; set; }
-    
-    public DateTime CreatedOn { get; set; }
-    public DateTime UpdatedOn { get; set; }
-
-    public abstract void SetId(IDAbstraction idAbstraction);
- 
-
-    public override string ToString()
+    public abstract class DataModelAbstractionBase : IDataModel
     {
-      return $"{InternalId}, {Label}, {CreatedOn}, {UpdatedOn}, {IsActive}";
+        protected DataModelAbstractionBase()
+        {
+            CreatedOn = DateTime.Now;
+        }
+
+        public abstract IDAbstraction IdAbstraction { get; }
+
+        [Required]
+        public virtual int InternalId { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Label too long")]
+        public virtual string Label { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedOn { get; set; }
+
+        public virtual byte[] Timestamp { get; set; }
+
+        public abstract void SetId(IDAbstraction idAbstraction);
+
+
+        public override string ToString()
+        {
+            return $"{InternalId}, {Label}, {CreatedOn}, {Timestamp}, {IsActive}";
+        }
     }
-  }
 }

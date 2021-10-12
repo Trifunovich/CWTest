@@ -5,7 +5,8 @@ namespace DataServiceProvider.Core.DtoAbstraction
 {
   public abstract class DtoBase : IDto
   {
-    public IDAbstraction Id { get; set; }
+    public IDAbstraction IdAbstraction { get; protected set; }
+
     public int InternalId { get; set; }
 
     public virtual string Label { get; set; }
@@ -13,7 +14,7 @@ namespace DataServiceProvider.Core.DtoAbstraction
     public virtual bool IsActive { get; set; }
 
     public virtual DateTime CreatedOn { get; set; }
-
-    public virtual DateTime UpdatedOn { get; set; }
+    public byte[] Timestamp { get; set; }
+    public abstract void SetId(IDAbstraction idAbstraction);
   }
 }

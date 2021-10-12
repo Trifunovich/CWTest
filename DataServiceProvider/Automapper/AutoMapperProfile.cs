@@ -9,20 +9,17 @@ namespace DataServiceProvider.Core.Automapper
 {
     class AutoMapperProfile : Profile
     {
-      
-        private void RegisterMapping<T, TDto>(Type t)
-            where T : IDataModel
-            where TDto : IDto
+        public AutoMapperProfile()
         {
-            CreateMap(typeof(T), typeof(TDto)).AfterMap(AfterMap1);
-            CreateMap(typeof(TDto), typeof(T)).AfterMap(AfterMap2);
+            CreateMap(typeof(IDataModel), typeof(IDto)).AfterMap(AfterMap1);
+            CreateMap(typeof(IDto), typeof(IDataModel)).AfterMap(AfterMap2);
         }
 
         private void AfterMap2<TDto, T>(TDto dto, T original)
         {
             if (dto is IDto dtoC && original is IDataModel dataModel)
             {
-                dataModel.SetId(dtoC.Id);
+                dataModel.SetId(dtoC.IdAbstraction);
             }
         }
 
@@ -30,7 +27,7 @@ namespace DataServiceProvider.Core.Automapper
         {
             if (dto is IDto dtoC && original is IDataModel dataModel)
             {
-                dtoC.Id = dataModel.IdAbstraction;
+                dtoC.SetId(dataModel.IdAbstraction);
             }
         }
     }

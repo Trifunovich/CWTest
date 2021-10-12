@@ -2,19 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DataAccess.Core.Abstractions;
 
 namespace DataServiceProvider.Core.DtoAbstraction
 {
   /// <summary>
   /// Data transfer object abstraction
   /// </summary>
-  public interface IDto
+  public interface IDto : IDataModel
   {
-    IDAbstraction Id { get; set; }
-    int InternalId { get; set; }
-    string Label { get; set; }
-    bool IsActive { get; set; }
-    DateTime CreatedOn { get; set; }
-    DateTime UpdatedOn { get; set; }
   }
 }

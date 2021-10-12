@@ -64,7 +64,7 @@ namespace DataServiceProvider.Core.UnitOfWork
                   }
 
                   return true;
-              }, "Uow element cleaning", item.Id.ValueAsString);
+              }, "Uow element cleaning", item.IdAbstraction.ValueAsString);
         }
 
         public bool RegisterDirty(T item)
@@ -78,7 +78,7 @@ namespace DataServiceProvider.Core.UnitOfWork
                  }
 
                  return true;
-             }, "Uow element marked as dirty", item.Id.ValueAsString);
+             }, "Uow element marked as dirty", item.IdAbstraction.ValueAsString);
         }
 
         public bool RegisterInsert(IEnumerable<T> records)
@@ -89,7 +89,7 @@ namespace DataServiceProvider.Core.UnitOfWork
                 foreach (var x in records)
                 {
                     bool res = false;
-                    _deleteList.TryRemove(x.Id, out res);
+                    _deleteList.TryRemove(x.IdAbstraction, out res);
                     _dirtyList.Remove(x);
                     _insertList.Remove(x);
                 }

@@ -27,7 +27,8 @@ namespace DataAccess.Excel.Repositories
 
         private async Task<IList<T>> GetAllOfThem()
         {
-            return (IList<T>)(await _extractor.Import(_context.ExcelPath, CancellationToken.None)).FirstOrDefault().Value;
+            var imported = await _extractor.Import(_context.ExcelPath, CancellationToken.None);
+            return imported.FirstOrDefault().Value.OfType<T>().ToList();
         }
 
         protected override Func<bool?, Task<IList<T>>> GetAllFunction =>

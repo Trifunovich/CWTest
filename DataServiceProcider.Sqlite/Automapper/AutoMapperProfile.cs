@@ -1,7 +1,9 @@
 ﻿using System;
 using AutoMapper;
 using DataAccess.Core.Abstractions;
+using DataAccess.CWTest.Abstraction;
 using DataServiceProvider.Core.DtoAbstraction;
+using DataServiceProvider.TestBench.Dtos;
 
 namespace DataServiceProvider.TestBench.Automapper
 {
@@ -14,18 +16,24 @@ namespace DataServiceProvider.TestBench.Automapper
 
         private void RegisterMapping()
         {
-            CreateMap<IDataModel, IDto>().AfterMap(AfterMap1);
-            CreateMap<IDto, IDataModel>().AfterMap(AfterMap2);
+            CreateMap<IComponentSpecification, ComponentsDto>().AfterMap(AfterMap1);
+            CreateMap<ComponentsDto, IComponentSpecification>().AfterMap(AfterMap2);
         }
 
-        private void AfterMap1(IDataModel dataModel, IDto dto)
+        private void AfterMap2<TDto, T>(TDto dto, T original)
         {
-            dto.Id = dataModel.IdAbstraction;
+            if (dto is IDto dtoC && original is IDataModel dataModel)
+            {
+                dataModel.SetId(dtoC.IdAbstraction);
+            }
         }
 
-        private void AfterMap2(IDto dto, IDataModel original)
+        private void AfterMap1<T, TDto>(T original, TDto dto)
         {
-            original.SetId(dto.Id);
+            if (dto is IDto dtoC && original is IDataModel dataModel)
+            {
+                dtoC.SetId(dataModel.IdAbstraction);
+            }
         }
 
     }

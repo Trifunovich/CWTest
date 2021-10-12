@@ -10,9 +10,15 @@ namespace DataAccess.Core.Abstractions
     string Label { get; set; }
     bool IsActive { get; set; }
     DateTime CreatedOn { get; set; }
-    DateTime UpdatedOn { get; set; }
+
+    public byte[] Timestamp { get; set; }
 
     void SetId(IDAbstraction idAbstraction);
+  }
+
+  public interface IHierarchicalModel : IDataModel
+  {
+      int ParentId { get; set; }
   }
 
   public interface IDataModelBase<T> : IDataModel
